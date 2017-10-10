@@ -1,4 +1,4 @@
-#**CUDA Rasterizer**
+# **CUDA Rasterizer**
 
 ===============
 
