@@ -673,7 +673,10 @@ void _primitiveAssembly(int numIndices, int curPrimitiveBeginId, Primitive* dev_
 	
 }
 
+__global__ void ResterizeGlobal()
+{
 
+}
 
 /**
  * Perform rasterization.
