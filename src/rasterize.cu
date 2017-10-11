@@ -622,6 +622,17 @@ void rasterizeSetBuffers(const tinygltf::Scene & scene) {
 }
 
 
+//TODO
+//have already in NDC space
+__device__ void ToClippingSpaceTransform(glm::mat4 MVP,glm::mat3 MVP_normal, VertexAttributePosition &position, VertexAttributeNormal &normal)
+{
+	glm::vec4 pos = glm::vec4(position.x, position.y, position.z, 1.f);
+	pos = MVP * pos;
+	pos = pos / pos.w;
+	position = VertexAttributePosition(pos.x, pos.y, pos.z);
+
+	normal = MVP_normal*normal;
+}
 
 __global__ 
 void _vertexTransformAndAssembly(
@@ -641,7 +652,10 @@ void _vertexTransformAndAssembly(
 
 		// TODO: Apply vertex assembly here
 		// Assemble all attribute arraies into the primitive array
-		
+
+		ToClippingSpaceTransform(MVP, MV_normal, primitive.dev_position[vid], primitive.dev_normal[vid]);
+
+		primitive.dev_position[vid] = 0.5f * primitive.dev_position[vid] + VertexAttributePosition(0.5f);
 	}
 }
 
@@ -673,9 +687,15 @@ void _primitiveAssembly(int numIndices, int curPrimitiveBeginId, Primitive* dev_
 	
 }
 
-__global__ void ResterizeGlobal()
+//
+__global__ void ResterizeGlobal(int w, int h, Fragment *fragmentBuffer, glm::vec3 *framebuffer)
 {
+	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
+	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
+	int index = x + (y * w);
 
+	if (x < w && y < h) {
+	}
 }
 
 /**
