@@ -40,7 +40,7 @@ namespace {
 		// TODO: add new attributes to your VertexOut
 		// The attributes listed below might be useful, 
 		// but always feel free to modify on your own
-
+		 glm::vec3 ndcPos;   //NDC space position 
 		 glm::vec3 eyePos;	// eye space position used for shading
 		 glm::vec3 eyeNor;	// eye space normal used for shading, cuz normal will go wrong after perspective transformation
 		// glm::vec3 col;
@@ -624,14 +624,16 @@ void rasterizeSetBuffers(const tinygltf::Scene & scene) {
 
 //TODO
 //have already in NDC space
-__device__ void ToClippingSpaceTransform(glm::mat4 MVP,glm::mat3 MVP_normal, VertexAttributePosition &position, VertexAttributeNormal &normal)
+__device__ void ToClippingSpaceTransform(int index, glm::mat4 MVP,glm::mat4 MV,glm::mat3 MVP_normal, PrimitiveDevBufPointers& primitive)
 {
-	glm::vec4 pos = glm::vec4(position.x, position.y, position.z, 1.f);
-	pos = MVP * pos;
-	pos = pos / pos.w;
-	position = VertexAttributePosition(pos.x, pos.y, pos.z);
+	VertexOut tempVertexOut;
+	
+	tempVertexOut.pos = glm::vec4(primitive.dev_position[index].x, primitive.dev_position[index].y, primitive.dev_position[index].z, 1.f);
+	tempVertexOut.eyePos = glm::vec3(MV*tempVertexOut.pos);
+	tempVertexOut.eyeNor = MVP_normal*primitive.dev_normal[index];
+	tempVertexOut.ndcPos = tempVertexOut.eyePos / tempVertexOut.pos.w;
 
-	normal = MVP_normal*normal;
+	primitive.dev_verticesOut = &tempVertexOut;
 }
 
 __global__ 
@@ -653,9 +655,10 @@ void _vertexTransformAndAssembly(
 		// TODO: Apply vertex assembly here
 		// Assemble all attribute arraies into the primitive array
 
-		ToClippingSpaceTransform(MVP, MV_normal, primitive.dev_position[vid], primitive.dev_normal[vid]);
+		ToClippingSpaceTransform(vid, MVP, MV, MV_normal, primitive);
 
-		primitive.dev_position[vid] = 0.5f * primitive.dev_position[vid] + VertexAttributePosition(0.5f);
+		primitive.dev_verticesOut[vid].texcoord0.x = 0.5f * (float)width * (primitive.dev_verticesOut[vid].ndcPos.x + 1.0f);
+		primitive.dev_verticesOut[vid].texcoord0.y = 0.5f * (float)height * (primitive.dev_verticesOut[vid].ndcPos.y + 1.0f);
 	}
 }
 
@@ -674,13 +677,12 @@ void _primitiveAssembly(int numIndices, int curPrimitiveBeginId, Primitive* dev_
 		// TODO: uncomment the following code for a start
 		// This is primitive assembly for triangles
 
-		//int pid;	// id for cur primitives vector
-		//if (primitive.primitiveMode == TINYGLTF_MODE_TRIANGLES) {
-		//	pid = iid / (int)primitive.primitiveType;
-		//	dev_primitives[pid + curPrimitiveBeginId].v[iid % (int)primitive.primitiveType]
-		//		= primitive.dev_verticesOut[primitive.dev_indices[iid]];
-		//}
-
+		int pid;	// id for cur primitives vector
+		if (primitive.primitiveMode == TINYGLTF_MODE_TRIANGLES) {
+			pid = iid / (int)primitive.primitiveType;
+			dev_primitives[pid + curPrimitiveBeginId].v[iid % (int)primitive.primitiveType]
+				= primitive.dev_verticesOut[primitive.dev_indices[iid]];
+		}
 
 		// TODO: other primitive types (point, line)
 	}
