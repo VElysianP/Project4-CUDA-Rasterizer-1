@@ -71,6 +71,9 @@ project, and we will not be able to grade you without a good README.
 
 **checkerboard:**
 
+![enter image description here](https://lh3.googleusercontent.com/-5iArJTCluO8/WeE0Jx87R7I/AAAAAAAABDk/bVz8zQthMvcgcvbz8osTAP0BAyrc-vmZwCLcBGAs/s0/checkerboard.jpg "checkerboard.jpg")
+
+![enter image description here](https://lh3.googleusercontent.com/-zfa94tv0Wxc/WeE0O-9s1pI/AAAAAAAABDs/bEdQD3tONOYJo8uJbbVO5_zHDpGR-6NrQCLcBGAs/s0/checkerboard.gif "checkerboard.gif")
 
 ## **2. Extra Features**
 
