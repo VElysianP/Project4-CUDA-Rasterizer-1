@@ -33,7 +33,8 @@ duck:
 
 ![enter image description here](https://lh3.googleusercontent.com/-LQi4GtiM-3Q/WeEtJgcYxTI/AAAAAAAAA_4/0WYwtiE7orQXN7GYvA6E52oAfeebYBNLgCLcBGAs/s0/duck.gif "duck.gif")
 flower:
-
+![enter image description here](https://lh3.googleusercontent.com/-ZDCKtIGZ6nA/WeEuYNMx8JI/AAAAAAAABAY/GWdkd552qwM861O769HgauvoELkIYC71QCLcBGAs/s0/flower.jpg "flower.jpg")
+![enter image description here](https://lh3.googleusercontent.com/-ueP481WcJXA/WeEuc0KWnNI/AAAAAAAABAk/wDyoTQnTwW41lEzRrbkCFvUb9pbipOjJQCLcBGAs/s0/flower.gif "flower.gif")
 triangle:
 
 di:
