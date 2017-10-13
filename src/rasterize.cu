@@ -154,7 +154,7 @@ void render(int w, int h, Fragment *fragmentBuffer, glm::vec3 *framebuffer) {
 		//Lambert's Cosine Law 
 		glm::vec3 color;
 		//color = fragmentBuffer[index].color * glm::dot(fragmentBuffer[index].eyePos, fragmentBuffer[index].color);
-		color = glm::vec3(1.f)*abs(glm::dot(fragmentBuffer[index].eyePos, fragmentBuffer[index].color));
+		color = fragmentBuffer[index].color*abs(glm::dot(fragmentBuffer[index].eyePos, fragmentBuffer[index].color));
 		framebuffer[index] = color;
     }
 }
