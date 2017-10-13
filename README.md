@@ -20,6 +20,14 @@
 project, and we will not be able to grade you without a good README.
 
 ## **1. Basic Features**
+ 1. Vertex shading
+ 2. Primitive assembly with support for triangles read from buffers of index and vertex data
+ 3. Rasterization
+ 4. Fragment shading
+ 5. A depth buffer for storing and depth testing fragments
+ 6. Fragment-to-depth-buffer writing
+ 7. Lambert lighting
+
 **Results:** 
 **box:**
 
