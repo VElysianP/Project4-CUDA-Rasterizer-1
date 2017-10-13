@@ -61,9 +61,15 @@ project, and we will not be able to grade you without a good README.
 
 ### 1. Shared Memory Feature (1.0)
 
-### 2. Additional Primitive: Lines (0.5)
+### 2. Additional Primitive: Lines (0.5) 
 
-Have to remap the triangle version of data we have read from gltf file into Line mode.
+**The lines we are discussing here is not line loop!**
+
+Have to remap the triangle version of data we have read from gltf file into Line mode, which means for ***PrimitiveDevBufPointers*** p: 
+
+    p->numIndices == p->numVertices - 1;
+    p->numPrimitives == 2 * p->numIndices;
+
 
 ### 3. Additional Primitive: Points (0.5)
 
