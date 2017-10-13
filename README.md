@@ -67,9 +67,11 @@ Have to remap the triangle version of data we have read from gltf file into Line
 
 ### 3. Additional Primitive: Points (0.5)
 
-Have to remap the triangle version of data we have read from gltf file into Point mode, which means:
-* number of vertices = number of primitives *
-* number of vertices = number of indices  *
+Have to remap the triangle version of data we have read from gltf file into Point mode, which means for ***PrimitiveDevBufPointers*** p:
+
+    p->numIndices == p->numVertices;
+    p->numPrimitives == p->numVertices;
+
 
 ## **3. Performance Analysis**
 
