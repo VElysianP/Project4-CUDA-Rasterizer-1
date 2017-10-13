@@ -18,6 +18,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+
+
 namespace {
 
 	typedef unsigned short VertexIndex;
@@ -40,7 +42,10 @@ namespace {
 		// TODO: add new attributes to your VertexOut
 		// The attributes listed below might be useful, 
 		// but always feel free to modify on your own
+		//My Own *********************************
 		 glm::vec3 ndcPos;   //NDC space position 
+		 glm::vec2 viewPos; //position in viewport (float)
+		 //End ***************************
 		 glm::vec3 eyePos;	// eye space position used for shading
 		 glm::vec3 eyeNor;	// eye space normal used for shading, cuz normal will go wrong after perspective transformation
 		// glm::vec3 col;
@@ -62,8 +67,10 @@ namespace {
 		// The attributes listed below might be useful, 
 		// but always feel free to modify on your own
 
-		// glm::vec3 eyePos;	// eye space position used for shading
-		// glm::vec3 eyeNor;
+		 //glm::vec3 eyePos;	// eye space position used for shading
+		 //glm::vec3 eyeNor;
+		 glm::vec3 baryCoord;
+		 glm::vec2 viewPos;
 		// VertexAttributeTexcoord texcoord0;
 		// TextureData* dev_diffuseTex;
 		// ...
@@ -146,6 +153,7 @@ void render(int w, int h, Fragment *fragmentBuffer, glm::vec3 *framebuffer) {
         framebuffer[index] = fragmentBuffer[index].color;
 
 		// TODO: add your fragment shader code here
+		//Lambert's Cosine Law 
 
     }
 }
@@ -624,16 +632,17 @@ void rasterizeSetBuffers(const tinygltf::Scene & scene) {
 
 //TODO
 //have already in NDC space
-__device__ void ToClippingSpaceTransform(int index, glm::mat4 MVP,glm::mat4 MV,glm::mat3 MVP_normal, PrimitiveDevBufPointers& primitive)
+__device__ void ToClippingSpaceTransform(int index, glm::mat4 MVP,glm::mat4 MV,glm::mat3 MV_normal, PrimitiveDevBufPointers& primitive)
 {
 	VertexOut tempVertexOut;
 	
 	tempVertexOut.pos = glm::vec4(primitive.dev_position[index].x, primitive.dev_position[index].y, primitive.dev_position[index].z, 1.f);
 	tempVertexOut.eyePos = glm::vec3(MV*tempVertexOut.pos);
-	tempVertexOut.eyeNor = MVP_normal*primitive.dev_normal[index];
-	tempVertexOut.ndcPos = tempVertexOut.eyePos / tempVertexOut.pos.w;
+	tempVertexOut.eyeNor = glm::normalize(MV_normal*primitive.dev_normal[index]);
+	glm::vec4 ClippingPos = MVP*tempVertexOut.pos;
+	tempVertexOut.ndcPos = glm::vec3(ClippingPos / ClippingPos.w);
 
-	primitive.dev_verticesOut = &tempVertexOut;
+	primitive.dev_verticesOut[index] = tempVertexOut;
 }
 
 __global__ 
@@ -657,12 +666,10 @@ void _vertexTransformAndAssembly(
 
 		ToClippingSpaceTransform(vid, MVP, MV, MV_normal, primitive);
 
-		primitive.dev_verticesOut[vid].texcoord0.x = 0.5f * (float)width * (primitive.dev_verticesOut[vid].ndcPos.x + 1.0f);
-		primitive.dev_verticesOut[vid].texcoord0.y = 0.5f * (float)height * (primitive.dev_verticesOut[vid].ndcPos.y + 1.0f);
+		primitive.dev_verticesOut[vid].viewPos.x = 0.5f * (float)width * (primitive.dev_verticesOut[vid].ndcPos.x + 1.0f);
+		primitive.dev_verticesOut[vid].viewPos.y = 0.5f * (float)height * (primitive.dev_verticesOut[vid].ndcPos.y + 1.0f);
 	}
 }
-
-
 
 static int curPrimitiveBeginId = 0;
 
@@ -682,21 +689,127 @@ void _primitiveAssembly(int numIndices, int curPrimitiveBeginId, Primitive* dev_
 			pid = iid / (int)primitive.primitiveType;
 			dev_primitives[pid + curPrimitiveBeginId].v[iid % (int)primitive.primitiveType]
 				= primitive.dev_verticesOut[primitive.dev_indices[iid]];
+			dev_primitives[pid + curPrimitiveBeginId].primitiveType = Triangle;
 		}
 
 		// TODO: other primitive types (point, line)
+		//TODO EXTRA POINT 
+		if (primitive.primitiveMode == TINYGLTF_MODE_POINTS)
+		{
+			pid = iid / (int)primitive.primitiveType;
+			dev_primitives[pid + curPrimitiveBeginId].v[iid % (int)primitive.primitiveType]
+				= primitive.dev_verticesOut[primitive.dev_indices[iid]];
+			dev_primitives[pid + curPrimitiveBeginId].primitiveType = Point;
+		}
+		////TODO EXTRA LINE
+		if (primitive.primitiveMode == TINYGLTF_MODE_LINE)
+		{
+			pid = iid / (int)primitive.primitiveType;
+			dev_primitives[pid + curPrimitiveBeginId].v[iid % (int)primitive.primitiveType]
+				= primitive.dev_verticesOut[primitive.dev_indices[iid]];
+			dev_primitives[pid + curPrimitiveBeginId].primitiveType = Line;
+		}
 	}
 	
 }
 
-//
-__global__ void ResterizeGlobal(int w, int h, Fragment *fragmentBuffer, glm::vec3 *framebuffer)
+__device__ glm::vec3 InterpolateNormal(const  VertexOut vert0, const  VertexOut vert1, const  VertexOut vert2, glm::vec3 barycentricCoord)
 {
-	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
-	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
-	int index = x + (y * w);
+	glm::vec3 normalColor = vert0.eyeNor * barycentricCoord.x + vert1.eyeNor*barycentricCoord.y + vert2.eyeNor*barycentricCoord.z;
+	return normalColor;
+}
 
-	if (x < w && y < h) {
+//TODO trangle rasterization
+__device__ void RasterizeTriangle(int w, int h, Fragment *fragmentBuffer, VertexOut vert0, VertexOut vert1, VertexOut vert2, int* depth)
+{
+	//int pixel indices 
+	glm::vec3 vertPixel[3];
+	//vertPixel[0] = glm::vec3(vert0.viewPos.x, vert0.viewPos.y, 0.f);
+	//vertPixel[1] = glm::vec3(vert1.viewPos.x, vert1.viewPos.y, 0.f);
+	//vertPixel[2] = glm::vec3(vert2.viewPos.x, vert2.viewPos.y, 0.f);
+	vertPixel[0] = vert0.eyePos;
+	vertPixel[1] = vert1.eyePos;
+	vertPixel[2] = vert2.eyePos;
+
+	AABB currentRange = getAABBForTriangle(vertPixel);
+	//boundry cases
+	if ((currentRange.min.x < 0) || (currentRange.min.y < 0) || (currentRange.max.x >= w) || (currentRange.max.y >= h))
+	{
+		return;
+	}
+	for (int j = currentRange.min.y;j <= currentRange.max.y;j++)
+	{
+		for (int i = currentRange.min.x;i <= currentRange.max.x;i++)
+		{
+			glm::vec2 testPixel = glm::vec2(i, j);
+			int testPixelIndex = testPixel.x + testPixel.y*w;
+			glm::vec3 baryCoord = calculateBarycentricCoordinate(vertPixel, testPixel);
+
+			//if it is within the trangle
+			if (isBarycentricCoordInBounds(baryCoord))
+			{
+				float testZDepth = getZAtCoordinate(baryCoord, vertPixel);
+				//should consider how to one to one map float to int
+				int scaledTestZDepth = floor(1000 * testZDepth);
+
+				int lastDepth = atomicMin(&depth[testPixelIndex], scaledTestZDepth);
+				if (lastDepth > scaledTestZDepth)
+				{
+					fragmentBuffer[testPixelIndex].color = baryCoord;
+					fragmentBuffer[testPixelIndex].viewPos = testPixel;
+					fragmentBuffer[testPixelIndex].baryCoord = baryCoord;
+				}
+			}
+		}
+	}
+}
+
+__device__ void RasterizeLine() {
+
+}
+
+__device__ void RasterizePoint(int w, int h, const VertexOut vert0, Fragment* fragmentBuffer, int* depth)
+{
+	int pointScreenIndex = vert0.viewPos.x + vert0.viewPos.y*w;
+	int scaledTestZDepth = (int)1000*vert0.eyePos.z;
+	int lastDepth = atomicMin(&depth[pointScreenIndex], scaledTestZDepth);
+	if (lastDepth > scaledTestZDepth)
+	{
+		fragmentBuffer[pointScreenIndex].viewPos = vert0.viewPos;
+		fragmentBuffer[pointScreenIndex].color = vert0.eyeNor;
+	}
+}
+
+//TODO Rasterization
+__global__ void RasterizeGlobal(int numPrimitives,int w, int h, Fragment *fragmentBuffer, Primitive* dev_primitives,int* depth)
+{
+	int index = (blockIdx.x * blockDim.x) + threadIdx.x;
+
+	if (index<numPrimitives) {
+		Primitive tempPrim = dev_primitives[index];
+		if (tempPrim.primitiveType==Triangle)
+		{
+			VertexOut vert0 = dev_primitives[index].v[0];
+			VertexOut vert1 = dev_primitives[index].v[1];
+			VertexOut vert2 = dev_primitives[index].v[2];
+
+			RasterizeTriangle(w, h, fragmentBuffer, vert0, vert1, vert2, depth);
+		}
+
+		if (tempPrim.primitiveType == Line)
+		{
+			VertexOut vert0 = dev_primitives[index].v[0];
+			VertexOut vert1 = dev_primitives[index].v[1];
+
+			RasterizeLine();
+		}
+
+		if (tempPrim.primitiveType == Point)
+		{
+			VertexOut vert0 = dev_primitives[index].v[0];
+
+			RasterizePoint(w, h, vert0, fragmentBuffer, depth);
+		}
 	}
 }
 
@@ -709,14 +822,15 @@ void rasterize(uchar4 *pbo, const glm::mat4 & MVP, const glm::mat4 & MV, const g
     dim3 blockCount2d((width  - 1) / blockSize2d.x + 1,
 		(height - 1) / blockSize2d.y + 1);
 
+	dim3 numThreadsPerBlock(128);
+
 	// Execute your rasterization pipeline here
 	// (See README for rasterization pipeline outline.)
 
 	// Vertex Process & primitive assembly
 	{
 		curPrimitiveBeginId = 0;
-		dim3 numThreadsPerBlock(128);
-
+	
 		auto it = mesh2PrimitivesMap.begin();
 		auto itEnd = mesh2PrimitivesMap.end();
 
@@ -748,7 +862,8 @@ void rasterize(uchar4 *pbo, const glm::mat4 & MVP, const glm::mat4 & MV, const g
 	initDepth << <blockCount2d, blockSize2d >> >(width, height, dev_depth);
 	
 	// TODO: rasterize
-
+	dim3 numBlocksForPrimitives((totalNumPrimitives + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
+	RasterizeGlobal << <numBlocksForPrimitives, numThreadsPerBlock >> > (totalNumPrimitives,width,height, dev_fragmentBuffer,dev_primitives,dev_depth);
 
 
     // Copy depthbuffer colors into framebuffer
