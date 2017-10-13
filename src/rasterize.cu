@@ -697,10 +697,13 @@ void _primitiveAssembly(int numIndices, int curPrimitiveBeginId, Primitive* dev_
 		//TODO EXTRA POINT 
 		if (primitive.primitiveMode == TINYGLTF_MODE_POINTS)
 		{
-			pid = iid / (int)primitive.primitiveType;
-			dev_primitives[pid + curPrimitiveBeginId].v[iid % (int)primitive.primitiveType]
-				= primitive.dev_verticesOut[primitive.dev_indices[iid]];
-			dev_primitives[pid + curPrimitiveBeginId].primitiveType = Point;
+			//the total amount of primitives equals to the amount of vertices and also indices 
+			dev_primitives[iid + curPrimitiveBeginId].v[0] = primitive.dev_verticesOut[iid];
+			dev_primitives[iid + curPrimitiveBeginId].primitiveType = Point;
+			//pid = iid / (int)primitive.primitiveType;
+			//dev_primitives[pid + curPrimitiveBeginId].v[iid % (int)primitive.primitiveType]
+			//	= primitive.dev_verticesOut[primitive.dev_indices[iid]];
+			//dev_primitives[pid + curPrimitiveBeginId].primitiveType = Point;
 		}
 		////TODO EXTRA LINE
 		if (primitive.primitiveMode == TINYGLTF_MODE_LINE)
@@ -758,7 +761,7 @@ __device__ void RasterizeTriangle(int w, int h, Fragment *fragmentBuffer, Vertex
 			{
 				float testZDepth = getZAtCoordinate(baryCoord, vertCam);
 				//should consider how to one to one map float to int
-				int scaledTestZDepth = floor(1000 * testZDepth);
+				int scaledTestZDepth = floor(10000 * testZDepth);
 
 				int lastDepth = atomicMin(&depth[testPixelIndex], scaledTestZDepth);
 				if (lastDepth > scaledTestZDepth)
@@ -780,7 +783,7 @@ __device__ void RasterizeLine() {
 __device__ void RasterizePoint(int w, int h, const VertexOut vert0, Fragment* fragmentBuffer, int* depth)
 {
 	int pointScreenIndex = vert0.viewPos.x + vert0.viewPos.y*w;
-	int scaledTestZDepth = (int)1000*vert0.eyePos.z;
+	int scaledTestZDepth = floor(10000*vert0.eyePos.z);
 	int lastDepth = atomicMin(&depth[pointScreenIndex], scaledTestZDepth);
 	if (lastDepth > scaledTestZDepth)
 	{
@@ -848,12 +851,25 @@ void rasterize(uchar4 *pbo, const glm::mat4 & MVP, const glm::mat4 & MV, const g
 			auto p = (it->second).begin();	// each primitive
 			auto pEnd = (it->second).end();
 			for (; p != pEnd; ++p) {
+				//TODO***********************for POINTS*******************
+				//p->primitiveMode = TINYGLTF_MODE_POINTS;
+				//p->numIndices = p->numVertices;
+				//p->numPrimitives = p->numVertices;
+				//********************end*********************
+
+				//TODO***********************for LINES (not line loop)*********
+				//p->primitiveMode = TINYGLTF_MODE_LINE;
+				//p->numPrimitives = p->numVertices - 1;
+				//p->numIndices = p->numPrimitives * 2;
+				//***********************end**********************8
+
 				dim3 numBlocksForVertices((p->numVertices + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
 				dim3 numBlocksForIndices((p->numIndices + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
 
 				_vertexTransformAndAssembly << < numBlocksForVertices, numThreadsPerBlock >> >(p->numVertices, *p, MVP, MV, MV_normal, width, height);
 				checkCUDAError("Vertex Processing");
 				cudaDeviceSynchronize();
+				
 				_primitiveAssembly << < numBlocksForIndices, numThreadsPerBlock >> >
 					(p->numIndices, 
 					curPrimitiveBeginId, 
