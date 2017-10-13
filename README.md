@@ -24,6 +24,9 @@ project, and we will not be able to grade you without a good README.
 box:
 
 cow:
+![enter image description here](https://lh3.googleusercontent.com/-9-YVj7Q4US4/WeEtx9v3pLI/AAAAAAAABAE/_w3UBgFQkuwAy8a4KNYzNRID46VbyepbwCLcBGAs/s0/cow.jpg "cow.jpg")
+
+![enter image description here](https://lh3.googleusercontent.com/-Zfhj3tvrP5Q/WeEt2ulKUxI/AAAAAAAABAM/RT-GalorVQoF7yYEgJ3rUsICtuJa8Qh9QCLcBGAs/s0/cow.gif "cow.gif")
 
 duck:
 ![enter image description here](https://lh3.googleusercontent.com/-UWEYwgzTuXI/WeEqv9movsI/AAAAAAAAA_g/oooNc5ajyLsfT-6wVgJ0waQ9IM245paNQCLcBGAs/s0/duck.jpg "duck.jpg")
