@@ -67,7 +67,7 @@ namespace {
 		// The attributes listed below might be useful, 
 		// but always feel free to modify on your own
 
-		 //glm::vec3 eyePos;	// eye space position used for shading
+		 glm::vec3 eyePos;	// eye space position used for shading
 		 //glm::vec3 eyeNor;
 		 glm::vec3 baryCoord;
 		 glm::vec2 viewPos;
@@ -150,11 +150,12 @@ void render(int w, int h, Fragment *fragmentBuffer, glm::vec3 *framebuffer) {
     int index = x + (y * w);
 
     if (x < w && y < h) {
-        framebuffer[index] = fragmentBuffer[index].color;
-
 		// TODO: add your fragment shader code here
 		//Lambert's Cosine Law 
-
+		glm::vec3 color;
+		//color = fragmentBuffer[index].color * glm::dot(fragmentBuffer[index].eyePos, fragmentBuffer[index].color);
+		color = glm::vec3(1.f)*abs(glm::dot(fragmentBuffer[index].eyePos, fragmentBuffer[index].color));
+		framebuffer[index] = color;
     }
 }
 
@@ -719,17 +720,24 @@ __device__ glm::vec3 InterpolateNormal(const  VertexOut vert0, const  VertexOut 
 	return normalColor;
 }
 
+__device__ glm::vec3 InterpolateEyePos(const  VertexOut vert0, const  VertexOut vert1, const  VertexOut vert2, glm::vec3 barycentricCoord)
+{
+	glm::vec3 eyePos = vert0.eyePos * barycentricCoord.x + vert1.eyePos*barycentricCoord.y + vert2.eyePos*barycentricCoord.z;
+	return eyePos;
+}
+
 //TODO trangle rasterization
 __device__ void RasterizeTriangle(int w, int h, Fragment *fragmentBuffer, VertexOut vert0, VertexOut vert1, VertexOut vert2, int* depth)
 {
 	//int pixel indices 
 	glm::vec3 vertPixel[3];
-	//vertPixel[0] = glm::vec3(vert0.viewPos.x, vert0.viewPos.y, 0.f);
-	//vertPixel[1] = glm::vec3(vert1.viewPos.x, vert1.viewPos.y, 0.f);
-	//vertPixel[2] = glm::vec3(vert2.viewPos.x, vert2.viewPos.y, 0.f);
-	vertPixel[0] = vert0.eyePos;
-	vertPixel[1] = vert1.eyePos;
-	vertPixel[2] = vert2.eyePos;
+	vertPixel[0] = glm::vec3(vert0.viewPos.x, vert0.viewPos.y, 0.f);
+	vertPixel[1] = glm::vec3(vert1.viewPos.x, vert1.viewPos.y, 0.f);
+	vertPixel[2] = glm::vec3(vert2.viewPos.x, vert2.viewPos.y, 0.f);
+	glm::vec3 vertCam[3];
+	vertCam[0] = vert0.eyePos;
+	vertCam[1] = vert1.eyePos;
+	vertCam[2] = vert2.eyePos;
 
 	AABB currentRange = getAABBForTriangle(vertPixel);
 	//boundry cases
@@ -748,16 +756,17 @@ __device__ void RasterizeTriangle(int w, int h, Fragment *fragmentBuffer, Vertex
 			//if it is within the trangle
 			if (isBarycentricCoordInBounds(baryCoord))
 			{
-				float testZDepth = getZAtCoordinate(baryCoord, vertPixel);
+				float testZDepth = getZAtCoordinate(baryCoord, vertCam);
 				//should consider how to one to one map float to int
 				int scaledTestZDepth = floor(1000 * testZDepth);
 
 				int lastDepth = atomicMin(&depth[testPixelIndex], scaledTestZDepth);
 				if (lastDepth > scaledTestZDepth)
 				{
-					fragmentBuffer[testPixelIndex].color = baryCoord;
+					fragmentBuffer[testPixelIndex].color = InterpolateNormal(vert0,vert1,vert2,baryCoord);
 					fragmentBuffer[testPixelIndex].viewPos = testPixel;
 					fragmentBuffer[testPixelIndex].baryCoord = baryCoord;
+					fragmentBuffer[testPixelIndex].eyePos = InterpolateEyePos(vert0, vert1, vert2, baryCoord);
 				}
 			}
 		}
@@ -777,6 +786,7 @@ __device__ void RasterizePoint(int w, int h, const VertexOut vert0, Fragment* fr
 	{
 		fragmentBuffer[pointScreenIndex].viewPos = vert0.viewPos;
 		fragmentBuffer[pointScreenIndex].color = vert0.eyeNor;
+		fragmentBuffer[pointScreenIndex].eyePos = vert0.eyePos;
 	}
 }
 
