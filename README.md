@@ -34,10 +34,14 @@ duck:
 ![enter image description here](https://lh3.googleusercontent.com/-LQi4GtiM-3Q/WeEtJgcYxTI/AAAAAAAAA_4/0WYwtiE7orQXN7GYvA6E52oAfeebYBNLgCLcBGAs/s0/duck.gif "duck.gif")
 flower:
 ![enter image description here](https://lh3.googleusercontent.com/-ZDCKtIGZ6nA/WeEuYNMx8JI/AAAAAAAABAY/GWdkd552qwM861O769HgauvoELkIYC71QCLcBGAs/s0/flower.jpg "flower.jpg")
+
 ![enter image description here](https://lh3.googleusercontent.com/-ueP481WcJXA/WeEuc0KWnNI/AAAAAAAABAk/wDyoTQnTwW41lEzRrbkCFvUb9pbipOjJQCLcBGAs/s0/flower.gif "flower.gif")
 triangle:
 
 di:
+![enter image description here](https://lh3.googleusercontent.com/-0cPSbY6RqTw/WeEwcpuoR5I/AAAAAAAABBI/P2aahQPYW0gEJn8BMS6BqheEB8W1zwBnwCLcBGAs/s0/di.jpg "di.jpg")
+
+![enter image description here](https://lh3.googleusercontent.com/-CB00VlVO33Y/WeEwhc6Y-_I/AAAAAAAABBQ/jACIpRS_Kc0LWdMbkYo46civzuZW9aZ6ACLcBGAs/s0/di.gif "di.gif")
 
 CesiumMilkTruck:
 
