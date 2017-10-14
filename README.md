@@ -67,7 +67,9 @@ project, and we will not be able to grade you without a good README.
 
 ## **2. Extra Features**
 
-### 1. Shared Memory Feature (1.0)
+### 1. UV Texture Mapping (1.0)
+
+See Performance Analysis for processing speed comparison. 
 
 ### 2. Additional Primitive: Lines (0.5) 
 
@@ -81,10 +83,13 @@ Have to remap the triangle version of data we have read from gltf file into Line
 
 ### 3. Additional Primitive: Points (0.5)
 
-Have to remap the triangle version of data we have read from gltf file into Point mode, which means for ***PrimitiveDevBufPointers*** p:
+The way to implement Point clouds is to only rasterize vertices on the triangle rather than rasterize all points on the triangle.
 
-    p->numIndices == p->numVertices;
-    p->numPrimitives == p->numVertices;
+To test this feature, please change at the beginning of **rasterize.cu** into true, and remember to change it back before testing other features. 
+
+    #define USINGPOINTS false
+
+Results: 
 
 
 ## **3. Performance Analysis**
