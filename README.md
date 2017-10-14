@@ -69,7 +69,15 @@ project, and we will not be able to grade you without a good README.
 
 ### 1. UV Texture Mapping (1.0)
 
-See Performance Analysis for processing speed comparison. 
+**Results:** 
+
+**checkerboard:**
+
+![enter image description here](https://lh3.googleusercontent.com/--eh0A_fp1wE/WeJ-By5iepI/AAAAAAAABE8/do-2zKpamLUEU9uwTLcWtqtp5XDQ8giYwCLcBGAs/s0/UVcheckerboard.gif "UVcheckerboard.gif")
+
+**duck:**
+
+![enter image description here](https://lh3.googleusercontent.com/-L6ZJvEvPx58/WeJ-XmX-D0I/AAAAAAAABFE/cRkx-eQBC4A8HndMhp8Q_2lV4r_74M5nQCLcBGAs/s0/UVduck.gif "UVduck.gif")
 
 ### 2. Additional Primitive: Lines (0.5) 
 
@@ -91,10 +99,7 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 
 **Results:** 
 
-**checkerboard:**
-
-
-**duck:**
+**CesiumMilkTruck:**
 
 ## **3. Performance Analysis**
 
