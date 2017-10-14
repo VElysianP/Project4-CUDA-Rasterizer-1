@@ -89,8 +89,12 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 
     #define USINGPOINTS false
 
-Results: 
+**Results:** 
 
+**checkerboard:**
+
+
+**duck:**
 
 ## **3. Performance Analysis**
 
