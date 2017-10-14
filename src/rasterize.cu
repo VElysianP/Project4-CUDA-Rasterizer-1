@@ -116,6 +116,11 @@ static Primitive *dev_primitives = NULL;
 static Fragment *dev_fragmentBuffer = NULL;
 static glm::vec3 *dev_framebuffer = NULL;
 
+//*********************TODO OTHER PRIMITIVES************************
+//static Primitive* dev_PointPrimitives = NULL;
+//static Primitive* dev_LinePrimitives = NULL;
+//****************************END***************************
+
 static int * dev_depth = NULL;	// you might need this buffer when doing depth test
 
 /**
@@ -717,6 +722,21 @@ void _primitiveAssembly(int numIndices, int curPrimitiveBeginId, Primitive* dev_
 	
 }
 
+//TODO EXTRA******************POINT ASSEMBLY***********************
+//__global__ void __PrimitiveAssemblyPoints(int numVertices, int curPrimitiveBeginId, Primitive* dev_primitives, PrimitiveDevBufPointers primitive)
+//{
+//	int iid = (blockIdx.x * blockDim.x) + threadIdx.x;
+//
+//	if (iid < numVertices) {
+//		if (primitive.primitiveMode == TINYGLTF_MODE_POINTS)
+//		{
+//			dev_primitives[iid + curPrimitiveBeginId].v[0] = primitive.dev_verticesOut[iid];
+//			dev_primitives[iid + curPrimitiveBeginId].primitiveType = Point;
+//		}
+//
+//	}
+//}
+
 __device__ glm::vec3 InterpolateNormal(const  VertexOut vert0, const  VertexOut vert1, const  VertexOut vert2, glm::vec3 barycentricCoord)
 {
 	glm::vec3 normalColor = vert0.eyeNor * barycentricCoord.x + vert1.eyeNor*barycentricCoord.y + vert2.eyeNor*barycentricCoord.z;
@@ -837,6 +857,10 @@ void rasterize(uchar4 *pbo, const glm::mat4 & MVP, const glm::mat4 & MV, const g
 
 	dim3 numThreadsPerBlock(128);
 
+	//***************for POINTS and LINES*********************
+	//int totalPrimitives;
+	//***********************end*********************
+
 	// Execute your rasterization pipeline here
 	// (See README for rasterization pipeline outline.)
 
@@ -850,18 +874,15 @@ void rasterize(uchar4 *pbo, const glm::mat4 & MVP, const glm::mat4 & MV, const g
 		for (; it != itEnd; ++it) {
 			auto p = (it->second).begin();	// each primitive
 			auto pEnd = (it->second).end();
-			for (; p != pEnd; ++p) {
-				//TODO***********************for POINTS*******************
-				//p->primitiveMode = TINYGLTF_MODE_POINTS;
-				//p->numIndices = p->numVertices;
-				//p->numPrimitives = p->numVertices;
-				//********************end*********************
 
-				//TODO***********************for LINES (not line loop)*********
-				//p->primitiveMode = TINYGLTF_MODE_LINE;
-				//p->numPrimitives = p->numVertices - 1;
-				//p->numIndices = p->numPrimitives * 2;
-				//***********************end**********************8
+			//*********************************for POINTS*************************
+			//totalPrimitives = p->numVertices;
+			//cudaMalloc(&dev_PointPrimitives, totalPrimitives * sizeof(Primitive));
+			//****************************end************************************
+
+			for (; p != pEnd; ++p) {
+				/*Primitive* dev_PointPrimitives = NULL;
+				Primitive* dev_LinePrimitives = NULL;*/
 
 				dim3 numBlocksForVertices((p->numVertices + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
 				dim3 numBlocksForIndices((p->numIndices + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
@@ -870,14 +891,29 @@ void rasterize(uchar4 *pbo, const glm::mat4 & MVP, const glm::mat4 & MV, const g
 				checkCUDAError("Vertex Processing");
 				cudaDeviceSynchronize();
 				
+				//****************************for TRIANGLES***************************
 				_primitiveAssembly << < numBlocksForIndices, numThreadsPerBlock >> >
 					(p->numIndices, 
 					curPrimitiveBeginId, 
 					dev_primitives, 
 					*p);
-				checkCUDAError("Primitive Assembly");
-
 				curPrimitiveBeginId += p->numPrimitives;
+				checkCUDAError("Primitive Assembly");
+				//*****************************end*************************************
+
+				//TODO***********************for POINTS*******************
+				//p->primitiveMode = TINYGLTF_MODE_POINTS;
+				//__PrimitiveAssemblyPoints << < numBlocksForVertices, numThreadsPerBlock >> >(totalPrimitives, curPrimitiveBeginId, dev_PointPrimitives, *p);
+				//curPrimitiveBeginId += p->numVertices;
+				//********************end*********************
+
+				//TODO***********************for LINES (not line loop)*********
+				//p->primitiveMode = TINYGLTF_MODE_LINE;
+				//p->numPrimitives = p->numVertices - 1;
+				//p->numIndices = 2 * p->numPrimitives;
+				//***********************end**********************8
+
+				
 			}
 		}
 
@@ -888,9 +924,20 @@ void rasterize(uchar4 *pbo, const glm::mat4 & MVP, const glm::mat4 & MV, const g
 	initDepth << <blockCount2d, blockSize2d >> >(width, height, dev_depth);
 	
 	// TODO: rasterize
+	//*****************************for TRIANGLES*****************************************
 	dim3 numBlocksForPrimitives((totalNumPrimitives + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
-	RasterizeGlobal << <numBlocksForPrimitives, numThreadsPerBlock >> > (totalNumPrimitives,width,height, dev_fragmentBuffer,dev_primitives,dev_depth);
+	RasterizeGlobal << <numBlocksForPrimitives, numThreadsPerBlock >> > (totalNumPrimitives, width, height, dev_fragmentBuffer, dev_primitives, dev_depth);
+	//*******************end******************************
 
+	//***************************for POINTS **********************
+	//dim3 numBlocksForPrimitives((totalPrimitives + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
+	//RasterizeGlobal << <numBlocksForPrimitives, numThreadsPerBlock >> > (totalPrimitives, width, height, dev_fragmentBuffer, dev_PointPrimitives, dev_depth);
+	//**************************end*******************
+
+	//***************************for POINTS **********************
+	/*dim3 numBlocksForPrimitives((totalPrimitives + numThreadsPerBlock.x - 1) / numThreadsPerBlock.x);
+	RasterizeGlobal << <numBlocksForPrimitives, numThreadsPerBlock >> > (totalNumPrimitives, width, height, dev_fragmentBuffer, dev_primitives, dev_depth);*/
+	//**************************end*******************
 
     // Copy depthbuffer colors into framebuffer
 	render << <blockCount2d, blockSize2d >> >(width, height, dev_fragmentBuffer, dev_framebuffer);
@@ -937,6 +984,11 @@ void rasterizeFree() {
 
 	cudaFree(dev_depth);
 	dev_depth = NULL;
+
+	//cudaFree(dev_PointPrimitives);
+	//dev_LinePrimitives = NULL;
+	//cudaFree(dev_LinePrimitives);
+	//dev_PointPrimitives = NULL;
 
     checkCUDAError("rasterize Free");
 }
