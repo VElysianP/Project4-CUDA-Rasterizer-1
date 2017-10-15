@@ -85,12 +85,17 @@ project, and we will not be able to grade you without a good README.
 
 ### 2. Additional Primitive: Lines (0.5) 
 
-**The lines we are discussing here is not line loop!**
+The way to implement Lines is to only rasterize pixels that lies on the lines between vertices of the triangles rather than rasterize all points on the triangle.
 
-Have to remap the triangle version of data we have read from gltf file into Line mode, which means for ***PrimitiveDevBufPointers*** p: 
+To test this feature, please change at the beginning of **rasterize.cu** into true, and remember to change it back before testing other features. 
 
-    p->numIndices == p->numVertices - 1;
-    p->numPrimitives == 2 * p->numIndices;
+    #define USINGLINES false
+
+**Results:** 
+
+**duck:**
+
+
 
 
 ### 3. Additional Primitive: Points (0.5)
