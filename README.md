@@ -125,11 +125,28 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 
 **Bottleneck of performance:**
 
+ Top device functions by total time chart:
+![enter image description here](https://lh3.googleusercontent.com/-F0JYofLkkkk/WeOFMwOd_iI/AAAAAAAABIA/amhdPzeNuSgBcGC_sayaOlMdqO_MG14FgCLcBGAs/s0/TopDeviceFuncByTime.jpg "TopDeviceFuncByTime.jpg")
 
-*Improvement*: Using shared memory to perform.
+It is apparently that the most time consuming device function is *RasterizeGlobal*, and this is the global function that is called from host *rasterize()* function. In my opinion, the reasons why it takes a large portion of time are:
 
-The comparison between using global memory and shared memory.
+ 1. It will call a lot of other device functions;
+ 2. It is generally based on if-else structure.
 
+Therefore,  when we refer to the performance detail chart, we can see that the occupancy of *RasterizeGlobal* is even smaller than 50%. Similarly, the occupancy of *_vertexTransformAndAssembly* is smaller than 50%, the reason lies in the texture checking and data transferring inside this function. However, the texture structure of this project cannot be thought to be efficient, since every vertices of output (to device and VBO) contains the same overall information of texture. It is a kind of waste of device memory.  Implementing texture and checking for texture takes a large portion of time. 
+
+![enter image description here](https://lh3.googleusercontent.com/-YmKHZXngKKc/WeOGdLqiVsI/AAAAAAAABII/FAAedWwbPHUdxV61UdmwX71QdAX_d4N_ACLcBGAs/s0/performanceDetail.jpg "performanceDetail.jpg")
+
+Also for the drive API performance, the *cudaDeviceSynchronize* takes the majority time. Although for the sake of data correction, it is not a problem of performance, I still think the data flow of this project enlarge the data synchronize time to some extent, simply because there are too many device pointers to transfer data to and for the host to wait for. 
+
+![enter image description here](https://lh3.googleusercontent.com/-sVVg88YUvN0/WeOG4EfofNI/AAAAAAAABIQ/J1prG2MsD7s0TXdkQTxhL5BevrhXo6BmwCLcBGAs/s0/RuntimeAPISum.jpg "RuntimeAPISum.jpg")
+
+
+**Optimizations:**
+
+ 1. Decrease the number of if-else structure: if the gltf can read Point and Line files, a more universal implementation of all those structures will not result in so many if-else structure. 
+ 2. More efficient texture data structure: if each pixel can only contain the uv coordinate and correspondent glm::vec3 color would result in less data transferring time.
+ 3. More efficient data storage method: although it would make us easier to understand the pipeline of rasterization if we have more device arrays to store the data, it takes more time to transfer data between them. If we can just write *VertexOut* directly into *FragmentBuffer*, that would makes the rasterizer faster. 
 
 ### Credits
 
