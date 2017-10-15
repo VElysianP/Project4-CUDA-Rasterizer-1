@@ -77,7 +77,11 @@ project, and we will not be able to grade you without a good README.
 
 **duck:**
 
-![enter image description here](https://lh3.googleusercontent.com/-L6ZJvEvPx58/WeJ-XmX-D0I/AAAAAAAABFE/cRkx-eQBC4A8HndMhp8Q_2lV4r_74M5nQCLcBGAs/s0/UVduck.gif "UVduck.gif")
+![enter image description here](https://lh3.googleusercontent.com/-w3tHNJfKIj4/WeK8mJ5H9-I/AAAAAAAABFo/Hz7GA1gO80wYUicZNnjpZZBTac4_JcrkgCLcBGAs/s0/UVduck.gif "UVduck.gif")
+
+**CesiumMilkTruck:**
+
+![enter image description here](https://lh3.googleusercontent.com/-QYGDsGXlnak/WeK8MvSz2kI/AAAAAAAABFg/UFgK1HsnQgMW7W4vfA-vMF68ZpNelEXUgCLcBGAs/s0/UVCesiumMilkTruck.gif "UVCesiumMilkTruck.gif")
 
 ### 2. Additional Primitive: Lines (0.5) 
 
@@ -99,7 +103,9 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 
 **Results:** 
 
-**CesiumMilkTruck:**
+**duck:**
+
+![enter image description here](https://lh3.googleusercontent.com/-EpRsvGCk_dM/WeLExW6T8YI/AAAAAAAABGE/HmGk2HY126kDhmZYUsBbp7dY3ZG1nqSYACLcBGAs/s0/PointDuck.gif "PointDuck.gif")
 
 ## **3. Performance Analysis**
 
