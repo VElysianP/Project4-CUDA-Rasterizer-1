@@ -85,7 +85,7 @@ project, and we will not be able to grade you without a good README.
 
 ### 2. Additional Primitive: Lines (0.5) 
 
-The way to implement Lines is to only rasterize pixels that lies on the lines between vertices of the triangles rather than rasterize all points on the triangle.
+The way to implement Lines is to only rasterize pixels that lies on the lines between vertices of the triangles rather than rasterize all points on the triangle. The tolerance of pixels that "lies on" the line is the dot product of the vectors between a specific pixel point to two vertices is smaller than -1 + 0.02, which means the angle between those vectors are larger than 170 degrees.
 
 To test this feature, please change at the beginning of **rasterize.cu** into true, and remember to change it back before testing other features. 
 
@@ -95,7 +95,7 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 
 **duck:**
 
-
+![enter image description here](https://lh3.googleusercontent.com/-sDjXKX0wQLc/WeLe7McOdEI/AAAAAAAABGg/oZ0_IQxXUI0UXnzXKypbhdrdSBszWJyrQCLcBGAs/s0/LINEduck.gif "LINEduck.gif")
 
 
 ### 3. Additional Primitive: Points (0.5)
