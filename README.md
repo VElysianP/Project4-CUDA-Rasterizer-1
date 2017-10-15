@@ -31,39 +31,39 @@ project, and we will not be able to grade you without a good README.
 **Results:** 
 **box:**
 
-![enter image description here](https://lh3.googleusercontent.com/-qYOfrvIJiDg/WeExNfX99KI/AAAAAAAABBk/poJABEGVu1IIOoOEKt5nm1PGoOzcKCicACLcBGAs/s0/box.gif "box.gif")
+![box normal rasterization](https://lh3.googleusercontent.com/-qYOfrvIJiDg/WeExNfX99KI/AAAAAAAABBk/poJABEGVu1IIOoOEKt5nm1PGoOzcKCicACLcBGAs/s0/box.gif "box.gif")
 
 **cow:**
 
-![enter image description here](https://lh3.googleusercontent.com/-Zfhj3tvrP5Q/WeEt2ulKUxI/AAAAAAAABAM/RT-GalorVQoF7yYEgJ3rUsICtuJa8Qh9QCLcBGAs/s0/cow.gif "cow.gif")
+![cow normal rasterization](https://lh3.googleusercontent.com/-Zfhj3tvrP5Q/WeEt2ulKUxI/AAAAAAAABAM/RT-GalorVQoF7yYEgJ3rUsICtuJa8Qh9QCLcBGAs/s0/cow.gif "cow.gif")
 
 **duck:**
 
-![enter image description here](https://lh3.googleusercontent.com/-LQi4GtiM-3Q/WeEtJgcYxTI/AAAAAAAAA_4/0WYwtiE7orQXN7GYvA6E52oAfeebYBNLgCLcBGAs/s0/duck.gif "duck.gif")
+![duck normal rasterization](https://lh3.googleusercontent.com/-LQi4GtiM-3Q/WeEtJgcYxTI/AAAAAAAAA_4/0WYwtiE7orQXN7GYvA6E52oAfeebYBNLgCLcBGAs/s0/duck.gif "duck.gif")
 
 **flower:**
 
-![enter image description here](https://lh3.googleusercontent.com/-ueP481WcJXA/WeEuc0KWnNI/AAAAAAAABAk/wDyoTQnTwW41lEzRrbkCFvUb9pbipOjJQCLcBGAs/s0/flower.gif "flower.gif")
+![flower normal rasterization](https://lh3.googleusercontent.com/-ueP481WcJXA/WeEuc0KWnNI/AAAAAAAABAk/wDyoTQnTwW41lEzRrbkCFvUb9pbipOjJQCLcBGAs/s0/flower.gif "flower.gif")
 
 **triangle:**
 
-![enter image description here](https://lh3.googleusercontent.com/-82OQF5cBjeA/WeEyKTi15YI/AAAAAAAABCM/FEzOwcA1iHgrAcdaua1ic-sIc6QKLMNpgCLcBGAs/s0/triangle.gif "triangle.gif")
+![triangle normal rasterization](https://lh3.googleusercontent.com/-82OQF5cBjeA/WeEyKTi15YI/AAAAAAAABCM/FEzOwcA1iHgrAcdaua1ic-sIc6QKLMNpgCLcBGAs/s0/triangle.gif "triangle.gif")
 
 **di:**
 
-![enter image description here](https://lh3.googleusercontent.com/-CB00VlVO33Y/WeEwhc6Y-_I/AAAAAAAABBQ/jACIpRS_Kc0LWdMbkYo46civzuZW9aZ6ACLcBGAs/s0/di.gif "di.gif")
+![di normal rasterization](https://lh3.googleusercontent.com/-CB00VlVO33Y/WeEwhc6Y-_I/AAAAAAAABBQ/jACIpRS_Kc0LWdMbkYo46civzuZW9aZ6ACLcBGAs/s0/di.gif "di.gif")
 
 **CesiumMilkTruck:**
 
-![enter image description here](https://lh3.googleusercontent.com/-kzu5CXH28YU/WeEyvsZmZkI/AAAAAAAABCs/5oce21ZkNo4YZ4vUqQNOw-Sr1UtlxRA8gCLcBGAs/s0/CesiumMilkTruck.gif "CesiumMilkTruck.gif")
+![CesiumMilkTruck normal rasterization](https://lh3.googleusercontent.com/-kzu5CXH28YU/WeEyvsZmZkI/AAAAAAAABCs/5oce21ZkNo4YZ4vUqQNOw-Sr1UtlxRA8gCLcBGAs/s0/CesiumMilkTruck.gif "CesiumMilkTruck.gif")
 
 **2_cylinder_engine:** 
 
-![enter image description here](https://lh3.googleusercontent.com/-_ls1SibOQ_E/WeEzmWnS1wI/AAAAAAAABDU/DP09VJdvFQMXjFCjVZu43MSmEo1n2tW_ACLcBGAs/s0/2_cylinder_engine.gif "2_cylinder_engine.gif")
+![2_cylinder_engine normal rasterization](https://lh3.googleusercontent.com/-_ls1SibOQ_E/WeEzmWnS1wI/AAAAAAAABDU/DP09VJdvFQMXjFCjVZu43MSmEo1n2tW_ACLcBGAs/s0/2_cylinder_engine.gif "2_cylinder_engine.gif")
 
 **checkerboard:**
 
-![enter image description here](https://lh3.googleusercontent.com/-zfa94tv0Wxc/WeE0O-9s1pI/AAAAAAAABDs/bEdQD3tONOYJo8uJbbVO5_zHDpGR-6NrQCLcBGAs/s0/checkerboard.gif "checkerboard.gif")
+![checkerboard normal rasterization](https://lh3.googleusercontent.com/-zfa94tv0Wxc/WeE0O-9s1pI/AAAAAAAABDs/bEdQD3tONOYJo8uJbbVO5_zHDpGR-6NrQCLcBGAs/s0/checkerboard.gif "checkerboard.gif")
 
 ## **2. Extra Features**
 
@@ -73,15 +73,15 @@ project, and we will not be able to grade you without a good README.
 
 **checkerboard:**
 
-![enter image description here](https://lh3.googleusercontent.com/--eh0A_fp1wE/WeJ-By5iepI/AAAAAAAABE8/do-2zKpamLUEU9uwTLcWtqtp5XDQ8giYwCLcBGAs/s0/UVcheckerboard.gif "UVcheckerboard.gif")
+![checkerboard texture rasterization](https://lh3.googleusercontent.com/--eh0A_fp1wE/WeJ-By5iepI/AAAAAAAABE8/do-2zKpamLUEU9uwTLcWtqtp5XDQ8giYwCLcBGAs/s0/UVcheckerboard.gif "UVcheckerboard.gif")
 
 **duck:**
 
-![enter image description here](https://lh3.googleusercontent.com/-w3tHNJfKIj4/WeK8mJ5H9-I/AAAAAAAABFo/Hz7GA1gO80wYUicZNnjpZZBTac4_JcrkgCLcBGAs/s0/UVduck.gif "UVduck.gif")
+![duck texture rasterization](https://lh3.googleusercontent.com/-w3tHNJfKIj4/WeK8mJ5H9-I/AAAAAAAABFo/Hz7GA1gO80wYUicZNnjpZZBTac4_JcrkgCLcBGAs/s0/UVduck.gif "UVduck.gif")
 
 **CesiumMilkTruck:**
 
-![enter image description here](https://lh3.googleusercontent.com/-QYGDsGXlnak/WeK8MvSz2kI/AAAAAAAABFg/UFgK1HsnQgMW7W4vfA-vMF68ZpNelEXUgCLcBGAs/s0/UVCesiumMilkTruck.gif "UVCesiumMilkTruck.gif")
+![CesiumMilkTruck texture rasterization](https://lh3.googleusercontent.com/-QYGDsGXlnak/WeK8MvSz2kI/AAAAAAAABFg/UFgK1HsnQgMW7W4vfA-vMF68ZpNelEXUgCLcBGAs/s0/UVCesiumMilkTruck.gif "UVCesiumMilkTruck.gif")
 
 ### 2. Additional Primitive: Lines (0.5) 
 
@@ -93,9 +93,13 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 
 **Results:** 
 
-**duck:**
+**box:**
 
-![enter image description here](https://lh3.googleusercontent.com/-sDjXKX0wQLc/WeLe7McOdEI/AAAAAAAABGg/oZ0_IQxXUI0UXnzXKypbhdrdSBszWJyrQCLcBGAs/s0/LINEduck.gif "LINEduck.gif")
+
+(170 degrees of tolerance)
+
+
+(FLT_EPSILON tolerance)
 
 
 ### 3. Additional Primitive: Points (0.5)
@@ -110,7 +114,7 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 
 **duck:**
 
-![enter image description here](https://lh3.googleusercontent.com/-EpRsvGCk_dM/WeLExW6T8YI/AAAAAAAABGE/HmGk2HY126kDhmZYUsBbp7dY3ZG1nqSYACLcBGAs/s0/PointDuck.gif "PointDuck.gif")
+![duck point rasterization](https://lh3.googleusercontent.com/-EpRsvGCk_dM/WeLExW6T8YI/AAAAAAAABGE/HmGk2HY126kDhmZYUsBbp7dY3ZG1nqSYACLcBGAs/s0/PointDuck.gif "PointDuck.gif")
 
 ## **3. Performance Analysis**
 
