@@ -20,7 +20,7 @@
 
 //if USINGPOINTS and USINGLINES are both false, which means using triangles
 #define USINGPOINTS false
-#define USINGLINES true
+#define USINGLINES false
 //***********end*******************
 
 namespace {
@@ -817,11 +817,11 @@ __device__ void RasterizeTriangle(int w, int h, Fragment *fragmentBuffer, Vertex
 
 __device__ void RasterizeLine(int w, int h, Fragment *fragmentBuffer, VertexOut vert0, VertexOut vert1, VertexOut vert2, int* depth) 
 {
-	glm::vec3 vertPixel0 = glm::vec3(floor(vert0.viewPos.x), floor(vert0.viewPos.y),0);
+	glm::vec2 vertPixel0 = glm::vec2(floor(vert0.viewPos.x), floor(vert0.viewPos.y));
 	int testPixel0 = vertPixel0.x + vertPixel0.y*w;
-	glm::vec3 vertPixel1 = glm::vec3(floor(vert1.viewPos.x), floor(vert1.viewPos.y),0);
+	glm::vec2 vertPixel1 = glm::vec2(floor(vert1.viewPos.x), floor(vert1.viewPos.y));
 	int testPixel1 = vertPixel1.x + vertPixel1.y*w;
-	glm::vec3 vertPixel2 = glm::vec3(floor(vert2.viewPos.x), floor(vert2.viewPos.y),0);
+	glm::vec2 vertPixel2 = glm::vec2(floor(vert2.viewPos.x), floor(vert2.viewPos.y));
 	int testPixel2 = vertPixel2.x + vertPixel2.y*w;
 
 	glm::vec3 vertCam0 = vert0.eyePos;
@@ -831,9 +831,9 @@ __device__ void RasterizeLine(int w, int h, Fragment *fragmentBuffer, VertexOut 
 	glm::vec3 vertCam2 = vert2.eyePos;
 	int scaledTestZDepth2 = floor(abs(10000 * vertCam2.z));
 
-	glm::vec3 pair0[2]; pair0[0] = vertPixel0; pair0[1] = vertPixel1;
-	glm::vec3 pair1[2]; pair1[0] = vertPixel1; pair1[1] = vertPixel2;
-	glm::vec3 pair2[2]; pair2[0] = vertPixel0; pair2[1] = vertPixel2;
+	glm::vec2 pair0[2]; pair0[0] = vertPixel0; pair0[1] = vertPixel1;
+	glm::vec2 pair1[2]; pair1[0] = vertPixel1; pair1[1] = vertPixel2;
+	glm::vec2 pair2[2]; pair2[0] = vertPixel0; pair2[1] = vertPixel2;
 
 	AABB mValue0 = getAABBForLine(pair0);
 	AABB mValue1 = getAABBForLine(pair1);
@@ -844,19 +844,19 @@ __device__ void RasterizeLine(int w, int h, Fragment *fragmentBuffer, VertexOut 
 	{
 		for (int i = mValue0.min.x;i <= mValue0.max.x;i++)
 		{
-			glm::vec3 testPixel = glm::vec3(i, j, 0);
+			glm::vec2 testPixel = glm::vec2(i, j);
 			int testPixelIndex = testPixel.x + testPixel.y*w;
-			if (glm::dot(testPixel - pair0[0], testPixel - pair0[1]) < (-1 + FLT_EPSILON))
+			if (glm::dot(glm::normalize(testPixel - pair0[0]), glm::normalize(testPixel - pair0[1])) < (-1 + 0.01))
 			{
 				float firstRatio0 = getZLinearCoordinate(testPixel, pair0);
-				int scaledTestZDepth = floor(scaledTestZDepth0*firstRatio0+scaledTestZDepth1*(1-firstRatio0));
+				int scaledTestZDepth = floor(scaledTestZDepth0+(scaledTestZDepth1-scaledTestZDepth0)*firstRatio0);
 				int lastDepth = atomicMin(&depth[testPixelIndex], scaledTestZDepth);
 
 				if (lastDepth > scaledTestZDepth)
 				{
 					fragmentBuffer[testPixelIndex].color = vert0.eyeNor*firstRatio0 + vert1.eyeNor*(1 - firstRatio0);
 					fragmentBuffer[testPixelIndex].eyePos = vertCam0*firstRatio0 + vertCam1*(1 - firstRatio0);
-					fragmentBuffer[testPixelIndex].viewPos = glm::vec2(testPixel);
+					fragmentBuffer[testPixelIndex].viewPos = testPixel;
 				}
 			}
 		}
@@ -867,9 +867,9 @@ __device__ void RasterizeLine(int w, int h, Fragment *fragmentBuffer, VertexOut 
 	{
 		for (int i = mValue1.min.x;i <= mValue1.max.x;i++)
 		{
-			glm::vec3 testPixel = glm::vec3(i, j, 0);
+			glm::vec2 testPixel = glm::vec2(i, j);
 			int testPixelIndex = testPixel.x + testPixel.y*w;
-			if (glm::dot(testPixel - pair1[0], testPixel - pair1[1]) < (-1 + FLT_EPSILON))
+			if (glm::dot(glm::normalize(testPixel - pair1[0]), glm::normalize(testPixel - pair1[1])) < (-1 + 0.01))
 			{
 				float firstRatio1 = getZLinearCoordinate(testPixel, pair1);
 				int scaledTestZDepth = floor(scaledTestZDepth1*firstRatio1 + scaledTestZDepth2*(1 - firstRatio1));
@@ -879,20 +879,20 @@ __device__ void RasterizeLine(int w, int h, Fragment *fragmentBuffer, VertexOut 
 				{
 					fragmentBuffer[testPixelIndex].color = vert1.eyeNor*firstRatio1 + vert2.eyeNor*(1 - firstRatio1);
 					fragmentBuffer[testPixelIndex].eyePos = vertCam1*firstRatio1 + vertCam2*(1 - firstRatio1);
-					fragmentBuffer[testPixelIndex].viewPos = glm::vec2(testPixel);
+					fragmentBuffer[testPixelIndex].viewPos = testPixel;
 				}
 			}
 		}
 	}
 
-	//third line
+	////third line
 	for (int j = mValue2.min.y;j <= mValue2.max.y;j++)
 	{
 		for (int i = mValue2.min.x;i <= mValue2.max.x;i++)
 		{
-			glm::vec3 testPixel = glm::vec3(i, j, 0);
+			glm::vec2 testPixel = glm::vec2(i, j);
 			int testPixelIndex = testPixel.x + testPixel.y*w;
-			if (glm::dot(testPixel - pair2[0], testPixel - pair2[1]) < (-1 + FLT_EPSILON))
+			if (glm::dot(glm::normalize(testPixel - pair2[0]), glm::normalize(testPixel - pair2[1])) < (-1 + 0.01))
 			{
 				float firstRatio2 = getZLinearCoordinate(testPixel, pair2);
 				int scaledTestZDepth = floor(scaledTestZDepth0*firstRatio2 + scaledTestZDepth2*(1 - firstRatio2));
@@ -902,7 +902,7 @@ __device__ void RasterizeLine(int w, int h, Fragment *fragmentBuffer, VertexOut 
 				{
 					fragmentBuffer[testPixelIndex].color = vert0.eyeNor*firstRatio2 + vert2.eyeNor*(1 - firstRatio2);
 					fragmentBuffer[testPixelIndex].eyePos = vertCam0*firstRatio2 + vertCam2*(1 - firstRatio2);
-					fragmentBuffer[testPixelIndex].viewPos = glm::vec2(testPixel);
+					fragmentBuffer[testPixelIndex].viewPos = testPixel;
 				}
 			}
 		}

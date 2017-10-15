@@ -43,7 +43,7 @@ AABB getAABBForTriangle(const glm::vec3 tri[3]) {
     return aabb;
 }
 __host__ __device__ static
-AABB getAABBForLine(const glm::vec3 tri[2]) {
+AABB getAABBForLine(const glm::vec2 tri[2]) {
 	AABB aabb;
 	aabb.min = glm::vec3(
 		min(tri[0].x, tri[1].x),
@@ -113,7 +113,7 @@ float getZAtCoordinate(const glm::vec3 barycentricCoord, const glm::vec3 tri[3])
 
 //get the ratio of the first point of interpolation 
 __host__ __device__ static
-float getZLinearCoordinate(const glm::vec3 testPixel, const glm::vec3 tri[2]) {
+float getZLinearCoordinate(const glm::vec2 testPixel, const glm::vec2 tri[2]) {
 
 	return (testPixel.y - tri[0].y) / (tri[1].y - tri[0].y);
 }
