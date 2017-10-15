@@ -19,7 +19,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 //if USINGPOINTS and USINGLINES are both false, which means using triangles
-#define USINGPOINTS false
+#define USINGPOINTS true
 #define USINGLINES false
 //***********end*******************
 
@@ -161,7 +161,7 @@ void render(int w, int h, Fragment *fragmentBuffer, glm::vec3 *framebuffer) {
 
 		if (fragmentBuffer[index].texture)
 		{
-			color = fragmentBuffer[index].color*abs(glm::dot(fragmentBuffer[index].eyePos, fragmentBuffer[index].eyeNor));
+			color = fragmentBuffer[index].color;/**abs(glm::dot(fragmentBuffer[index].eyePos, fragmentBuffer[index].eyeNor));*/
 		}
 		else
 		{
@@ -821,11 +821,11 @@ __device__ void RasterizeLine() {
 
 __device__ void RasterizePoint(int w, int h, Fragment *fragmentBuffer, VertexOut vert0, VertexOut vert1, VertexOut vert2, int* depth)
 {
-	glm::vec2 vertPixel0 = glm::vec2(vert0.viewPos.x, vert0.viewPos.y);
+	glm::vec2 vertPixel0 = glm::vec2(floor(vert0.viewPos.x), floor(vert0.viewPos.y));
 	int testPixel0 = vertPixel0.x + vertPixel0.y*w;
-	glm::vec2 vertPixel1 = glm::vec2(vert1.viewPos.x, vert1.viewPos.y);
+	glm::vec2 vertPixel1 = glm::vec2(floor(vert1.viewPos.x), floor(vert1.viewPos.y));
 	int testPixel1 = vertPixel1.x + vertPixel1.y*w;
-	glm::vec2 vertPixel2 = glm::vec2(vert2.viewPos.x, vert2.viewPos.y);
+	glm::vec2 vertPixel2 = glm::vec2(floor(vert2.viewPos.x), floor(vert2.viewPos.y));
 	int testPixel2 = vertPixel2.x + vertPixel2.y*w;
 
 	glm::vec3 vertCam0 = vert0.eyePos;
