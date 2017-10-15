@@ -85,7 +85,7 @@ project, and we will not be able to grade you without a good README.
 
 ### 2. Additional Primitive: Lines (0.5) 
 
-The way to implement Lines is to only rasterize pixels that lies on the lines between vertices of the triangles rather than rasterize all points on the triangle. The tolerance of pixels that "lies on" the line is the dot product of the vectors between a specific pixel point to two vertices is smaller than -1 + 0.02, which means the angle between those vectors are larger than 170 degrees.
+The way to implement Lines is to only rasterize pixels that lies on the lines between vertices of the triangles rather than rasterize all points on the triangle. The tolerance of pixels that "lies on" the line is the dot product of the vectors between a specific pixel point to two vertices is smaller than -1 + 0.01, which means the angle between those vectors are larger than 175 degrees.
 
 To test this feature, please change at the beginning of **rasterize.cu** into true, and remember to change it back before testing other features. 
 
@@ -96,10 +96,15 @@ To test this feature, please change at the beginning of **rasterize.cu** into tr
 **box:**
 
 
-(170 degrees of tolerance)
+(175 degrees of tolerance)
+
+![enter image description here](https://lh3.googleusercontent.com/-PCAqurO1xIE/WeN_Kq4DFBI/AAAAAAAABHc/P1O7v6cKU7QBxBbPfLkWg3NL7UDqHx47QCLcBGAs/s0/LINEbox.gif "LINEbox.gif")
 
 
-(FLT_EPSILON tolerance)
+**duck:**
+(175 degrees of tolerance)
+
+![enter image description here](https://lh3.googleusercontent.com/-gZENHUw8xtQ/WeN_kYHOGoI/AAAAAAAABHk/tWukkq3ZYycjHRYI_-RsYr7SD_skUplzACLcBGAs/s0/LINEduck.gif "LINEduck.gif")
 
 
 ### 3. Additional Primitive: Points (0.5)
