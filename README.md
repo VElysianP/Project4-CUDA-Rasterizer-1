@@ -26,7 +26,7 @@ project, and we will not be able to grade you without a good README.
  4. Fragment shading
  5. A depth buffer for storing and depth testing fragments
  6. Fragment-to-depth-buffer writing
- 7. Lambert lighting
+ 7. Lambert lighting (it is not apparent to see because I used the normal color to display)
 
 **Results:** 
 **box:**
